@@ -148,7 +148,9 @@ static bool scan_heredoc_start(Scanner *scanner, TSLexer *lexer) {
     }
 
     lexer->result_symbol = HEREDOC_START;
-    scanner->heredoc_is_raw = lexer->lookahead == '\'';
+    scanner->heredoc_is_raw = lexer->lookahead == '\'' ||
+                              lexer->lookahead == '"' ||
+                              lexer->lookahead == '\\';
     scanner->started_heredoc = false;
     STRING_CLEAR(scanner->heredoc_delimiter);
 
@@ -273,7 +275,8 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     }
 
     if (valid_symbols[EMPTY_VALUE]) {
-        if (iswspace(lexer->lookahead) || lexer->eof(lexer) || lexer->lookahead == ';' || lexer->lookahead == '&') {
+        if (iswspace(lexer->lookahead) || lexer->eof(lexer) ||
+            lexer->lookahead == ';' || lexer->lookahead == '&') {
             lexer->result_symbol = EMPTY_VALUE;
             return true;
         }
